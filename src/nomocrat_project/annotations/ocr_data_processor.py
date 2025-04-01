@@ -1,0 +1,68 @@
+'''
+OCR data processing related functions.
+'''
+
+import json
+import os
+import tqdm
+from nomocrat_project.annotations.common import (
+    BoundingBox, OCRBox, Page, OCRPageData, OCRData
+)
+
+
+##########################################################
+def import_ocr_data(
+    path: str,
+) -> OCRData:
+    '''
+    Load Label Studio exported data that was exported via export -> JSON-min.
+
+    :param path: The file path to the Label Studio exported JSON file (JSON-min version).
+    :return: The loaded data.
+    '''
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    ocr_data = list[OCRPageData]()
+    for raw_page in tqdm.tqdm(data):
+        if 'label' not in raw_page:
+            continue
+
+        img_fname = os.path.basename(raw_page['ocr'])
+        (root, ext) = os.path.splitext(img_fname)
+        (_, document_id, page_id) = root.split('-')
+        page_fname = f'{document_id}-{page_id}{ext}'
+        page = Page(
+            page_fname=page_fname,
+            document_id=document_id,
+            page_id=page_id,
+        )
+
+        ocr_boxes = list[OCRBox]()
+        if not isinstance(raw_page['transcription'], list):
+            raw_page['transcription'] = [raw_page['transcription']]
+        assert len(raw_page['transcription']) == len(raw_page['label']), page_fname
+        for (transcription, label) in zip(raw_page['transcription'], raw_page['label']):
+            assert len(label['rectanglelabels']) == 1
+            ocr_box = OCRBox(
+                box=BoundingBox(
+                    x=round(label['x']/100*label['original_width']),
+                    y=round(label['y']/100*label['original_height']),
+                    width=round(label['width']/100*label['original_width']),
+                    height=round(label['height']/100*label['original_height']),
+                ),
+                transcription=transcription,
+                language=label['rectanglelabels'][0],
+            )
+            ocr_boxes.append(ocr_box)
+
+        ocr_boxes.sort(key=lambda item: (item.box.y//10, item.box.x//10))
+        ocr_data.append(OCRPageData(
+            page=page,
+            boxes=ocr_boxes,
+        ))
+
+    ocr_data.sort(key=lambda item: item.page.page_fname)
+    return OCRData(
+        data=ocr_data,
+    )
