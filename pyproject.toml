@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools==75.6.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "nomocrat_project"
+authors = [
+    {name = "Marc Tanti", email = "marc.tanti@um.edu.mt"},
+]
+description = "An OCR and Document Layout Analyser for Maltese documents, including data set building tools."
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = [
+    "OCR",
+    "layout analyser",
+    "Maltese",
+]
+license = {text = "MIT License"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Typing :: Typed",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = ["version", "dependencies"]
+
+[tool.setuptools.dynamic]
+version = {attr = "nomocrat_project.__version__"}
+dependencies = {file = "requirements.txt"}
+
+[project.urls]
+Repository = "https://github.com/mtanti/nomocrat-project/"
+Documentation = "https://nomocrat-project.readthedocs.io/"
