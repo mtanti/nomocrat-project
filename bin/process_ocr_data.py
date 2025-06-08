@@ -37,7 +37,7 @@ def main(
     )
     with open(args.output_path, 'w', encoding='utf-8') as f:
         json.dump(
-            data.model_dump(),
+            data.model_dump(mode='json'),
             f,
             ensure_ascii=False,
             indent=4,
