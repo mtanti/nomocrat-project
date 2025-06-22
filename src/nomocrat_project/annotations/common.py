@@ -157,3 +157,163 @@ class OCRData(pydantic.BaseModel):
     '''
     A list of annotated pages.
     '''
+
+
+##########################################################
+class Point(pydantic.BaseModel):
+    '''
+    An x-y coordinate.
+    Assumes that the coordinate system has the origin (0, 0) in the top-left corner.
+    '''
+
+    x: int
+    '''
+    X-coordinate of the point.
+    '''
+
+    y: int
+    '''
+    Y-coordinate of the point.
+    '''
+
+
+##########################################################
+class LayoutLabel(enum.Enum):
+    '''
+    Enumeration for specifying the label of a page layout region according to DocLayNet classes.
+    '''
+
+    TEXT = 'Text'
+    '''
+    Used for Text regions.
+    '''
+
+    PICTURE = 'Picture'
+    '''
+    Used for Picture regions.
+    '''
+
+    FORMULA = 'Formula'
+    '''
+    Used for Formula regions.
+    '''
+
+    SECTION_HEADER = 'Section-header'
+    '''
+    Used for Section-header regions.
+    '''
+
+    PAGE_FOOTER = 'Page-footer'
+    '''
+    Used for Page-footer regions.
+    '''
+
+    PAGE_HEADER = 'Page-header'
+    '''
+    Used for Page-header regions.
+    '''
+
+    FOOTNOTE = 'Footnote'
+    '''
+    Used for Page-footer regions.
+    '''
+
+    TABLE = 'Table'
+    '''
+    Used for Table regions.
+    '''
+
+    CAPTION = 'Caption'
+    '''
+    Used for Caption regions.
+    '''
+
+    LIST_ITEM = 'List-item'
+    '''
+    Used for List-item regions.
+    '''
+
+    TITLE = 'Title'
+    '''
+    Used for Title regions.
+    '''
+
+
+    ##########################################################
+    def __str__(
+        self,
+    ) -> str:
+        '''
+        String conversion override.
+
+        :return: The enum name.
+        '''
+        return self.name
+
+
+##########################################################
+class LayoutPolygon(pydantic.BaseModel):
+    '''
+    Information about a polygon annotation in page layout data.
+    '''
+
+    polygon: list[Point]
+    '''
+    The polygon information.
+    '''
+
+    label: LayoutLabel
+    '''
+    The label of the polygon.
+    '''
+
+    ##########################################################
+    def get_topmost_y(
+        self,
+    ) -> int:
+        '''
+        Get the minimum y-coordinate from the vertices in the polygon.
+
+        :return: The topmost y.
+        '''
+        return min(pt.y for pt in self.polygon)
+
+    ##########################################################
+    def get_leftmost_x(
+        self,
+    ) -> int:
+        '''
+        Get the minimum x-coordinate from the vertices in the polygon.
+
+        :return: The leftmost x.
+        '''
+        return min(pt.x for pt in self.polygon)
+
+
+##########################################################
+class LayoutPageData(pydantic.BaseModel):
+    '''
+    Page layout annotations for a whole page.
+    '''
+
+    page: Page
+    '''
+    Information about the page being described.
+    '''
+
+    polygons: list[LayoutPolygon]
+    '''
+    A list of information about Page Layout polygons within the page.
+    '''
+
+
+##########################################################
+class LayoutData(pydantic.BaseModel):
+    '''
+    Page layout data set.
+    '''
+
+    data: list[LayoutPageData]
+    '''
+    A list of annotated pages.
+    '''
