@@ -5,7 +5,7 @@
 #
 # This file is part of NOMOCRAT project.
 '''
-Extract a more useful version of Label Studio's annotations file.
+Extract a more useful version of Label Studio's OCR annotations file.
 '''
 
 import argparse
@@ -20,7 +20,7 @@ def main(
     Main function.
     '''
     parser = argparse.ArgumentParser(
-        description='Extract a more useful version of Label Studio\'s annotations file.',
+        description='Extract a more useful version of Label Studio\'s OCR annotations file.',
     )
     parser.add_argument(
         'input_path',

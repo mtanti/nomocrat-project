@@ -6,7 +6,7 @@ import json
 import os
 import tqdm
 from nomocrat_project.annotations.common import (
-    BoundingBox, OCRBox, Page, OCRPageData, OCRData
+    BoundingBox, Language, OCRBox, Page, OCRPageData, OCRData
 )
 
 
@@ -15,11 +15,13 @@ def import_ocr_data(
     path: str,
 ) -> OCRData:
     '''
-    Load Label Studio exported data that was exported via export -> JSON-min.
+    Load Label Studio OCR exported data that was exported via export -> JSON-min.
 
-    :param path: The file path to the Label Studio exported JSON file (JSON-min version).
+    :param path: The file path to the Label Studio exported OCR JSON file (JSON-min version).
     :return: The loaded data.
     '''
+    languages = {e.value: e for e in Language}
+
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
@@ -52,7 +54,7 @@ def import_ocr_data(
                     height=round(label['height']/100*label['original_height']),
                 ),
                 transcription=transcription,
-                language=label['rectanglelabels'][0],
+                language=languages[label['rectanglelabels'][0]],
             )
             ocr_boxes.append(ocr_box)
 
