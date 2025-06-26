@@ -21,6 +21,7 @@ def import_layout_data(
     :param path: The file path to the Label Studio exported layout JSON file (JSON-min version).
     :return: The loaded data.
     '''
+    errors: list[str] = []
     labels = {e.value: e for e in LayoutLabel}
 
     with open(path, 'r', encoding='utf-8') as f:
@@ -28,6 +29,8 @@ def import_layout_data(
 
     layout_data = list[LayoutPageData]()
     for raw_page in tqdm.tqdm(data):
+        new_errors: list[str] = []
+
         img_fname = os.path.basename(raw_page['image'])
         (root, ext) = os.path.splitext(img_fname)
         (_, document_id, page_id) = root.split('-')
@@ -40,36 +43,52 @@ def import_layout_data(
 
         layout_polygons = list[LayoutPolygon]()
         for ply in raw_page['ply']:
-            assert ply['closed']
-            assert len(ply['points']) >= 3
-            assert len(ply['polygonlabels']) == 1
-            layout_polygon = LayoutPolygon(
-                polygon=[
-                    Point(
-                        x=round(point[0]/100*ply['original_width']),
-                        y=round(point[1]/100*ply['original_height']),
-                    )
-                    for point in ply['points']
-                ],
-                label=labels[ply['polygonlabels'][0]],
-            )
-            layout_polygons.append(layout_polygon)
+            if not ply['closed']:
+                new_errors.append(f'Open polygon in {page_fname}.')
+            if len(ply['points']) < 3:
+                new_errors.append(f'Polygon with < 3 vertices in {page_fname}.')
+            if len(ply['polygonlabels']) != 1:
+                new_errors.append(f'Number of labels != 1 in {page_fname}.')
+            if len(new_errors) == 0:
+                layout_polygon = LayoutPolygon(
+                    polygon=[
+                        Point(
+                            x=round(point[0]/100*ply['original_width']),
+                            y=round(point[1]/100*ply['original_height']),
+                        )
+                        for point in ply['points']
+                    ],
+                    label=labels[ply['polygonlabels'][0]],
+                )
+                layout_polygons.append(layout_polygon)
 
+        # Check for geometric errors.
         polys = [
             shapely.Polygon([(point.x, point.y) for point in layout_polygon.polygon])
             for layout_polygon in layout_polygons
         ]
-        for poly in polys:
-            assert poly.is_simple
-        for i in range(0, len(polys) - 1):
-            for j in range(i + 1, len(polys)):
-                assert not polys[i].intersects(polys[j])
+        if any(not poly.is_simple for poly in polys):
+            new_errors.append(f'Non-simple polygon in {page_fname}.')
+        if any(
+            polys[i].intersects(polys[j])
+            for i in range(0, len(polys) - 1)
+            for j in range(i + 1, len(polys))
+        ):
+            new_errors.append(f'Intersecting polygons in {page_fname}.')
 
-        layout_polygons.sort(key=lambda item: (item.get_leftmost_x()//10, item.get_topmost_y()//10))
-        layout_data.append(LayoutPageData(
-            page=page,
-            polygons=layout_polygons,
-        ))
+        if len(new_errors) > 0:
+            errors.extend(new_errors)
+        else:
+            layout_polygons.sort(
+                key=lambda item: (item.get_leftmost_x()//10, item.get_topmost_y()//10)
+            )
+            layout_data.append(LayoutPageData(
+                page=page,
+                polygons=layout_polygons,
+            ))
+
+    if len(errors) > 0:
+        raise Exception('\n'.join(errors))
 
     layout_data.sort(key=lambda item: item.page.page_fname)
     return LayoutData(

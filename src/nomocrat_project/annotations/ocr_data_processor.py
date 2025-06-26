@@ -20,6 +20,7 @@ def import_ocr_data(
     :param path: The file path to the Label Studio exported OCR JSON file (JSON-min version).
     :return: The loaded data.
     '''
+    errors: list[str] = []
     languages = {e.value: e for e in Language}
 
     with open(path, 'r', encoding='utf-8') as f:
@@ -27,6 +28,7 @@ def import_ocr_data(
 
     ocr_data = list[OCRPageData]()
     for raw_page in tqdm.tqdm(data):
+        new_errors: list[str] = []
         if 'label' not in raw_page:
             continue
 
@@ -45,24 +47,32 @@ def import_ocr_data(
             raw_page['transcription'] = [raw_page['transcription']]
         assert len(raw_page['transcription']) == len(raw_page['label']), page_fname
         for (transcription, label) in zip(raw_page['transcription'], raw_page['label']):
-            assert len(label['rectanglelabels']) == 1
-            ocr_box = OCRBox(
-                box=BoundingBox(
-                    x=round(label['x']/100*label['original_width']),
-                    y=round(label['y']/100*label['original_height']),
-                    width=round(label['width']/100*label['original_width']),
-                    height=round(label['height']/100*label['original_height']),
-                ),
-                transcription=transcription,
-                language=languages[label['rectanglelabels'][0]],
-            )
-            ocr_boxes.append(ocr_box)
+            if len(label['rectanglelabels']) != 1:
+                new_errors.append(f'Number of labels != 1 in {page_fname}.')
+            if len(new_errors) == 0:
+                ocr_box = OCRBox(
+                    box=BoundingBox(
+                        x=round(label['x']/100*label['original_width']),
+                        y=round(label['y']/100*label['original_height']),
+                        width=round(label['width']/100*label['original_width']),
+                        height=round(label['height']/100*label['original_height']),
+                    ),
+                    transcription=transcription,
+                    language=languages[label['rectanglelabels'][0]],
+                )
+                ocr_boxes.append(ocr_box)
 
-        ocr_boxes.sort(key=lambda item: (item.box.y//10, item.box.x//10))
-        ocr_data.append(OCRPageData(
-            page=page,
-            boxes=ocr_boxes,
-        ))
+        if len(new_errors) > 0:
+            errors.extend(new_errors)
+        else:
+            ocr_boxes.sort(key=lambda item: (item.box.y//10, item.box.x//10))
+            ocr_data.append(OCRPageData(
+                page=page,
+                boxes=ocr_boxes,
+            ))
+
+    if len(errors) > 0:
+        raise Exception('\n'.join(errors))
 
     ocr_data.sort(key=lambda item: item.page.page_fname)
     return OCRData(
