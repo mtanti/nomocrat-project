@@ -33,9 +33,10 @@ h1 {
     font-family: arial;
     font-size: 36pt;
 }
-img {
-    border: dashed 1pt black;
-    margin-top: 10px;
+.section {
+    margin-top: 100px;
+    padding: 10px;
+    border-top: 5px black solid;
 }
 .label {
     font-family: arial;
@@ -46,14 +47,20 @@ img {
     border-radius: 5px;
     padding: 5px;
 }
+img {
+    border: dashed 1pt black;
+    margin-top: 10px;
+}
+.scrollableimg {
+    width: 100%;
+    height: 200px;
+    overflow: scroll;
+}
 .transcription {
     font-family: 'courier new';
     font-size: 24pt;
-}
-div {
-    margin-top: 100px;
-    padding: 10px;
-    border-top: 5px black solid;
+    width: 100%;
+    height: 200px;
 }
 a {
     font-family: arial;
@@ -105,7 +112,7 @@ a {
 </head>
 <body>
     <h1>{page_data.page.page_fname}</h1>
-    <div>
+    <div class="section">
         <img src="{page_data.page.page_fname}" />
     </div>
 ''', file=f)
@@ -115,10 +122,10 @@ a {
                     html.escape(ocr_box.transcription).replace('\n', ' NEWLINE ')
                 )
                 print(f'''\
-    <div>
-        <span class="label">{ocr_box.language}</span><br />
-        <img src="{box_fname}" /><br />
-        <span class="transcription">{encoded_transcription}</span><br />
+    <div class="section">
+        <span class="label">{ocr_box.language}</span>
+        <div class="scrollableimg"><img src="{box_fname}" /></div>
+        <textarea class="transcription">{encoded_transcription}</textarea>
     </div>
 ''', file=f)
 
