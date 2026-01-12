@@ -59,6 +59,7 @@ img {
 .transcription {
     font-family: 'courier new';
     font-size: 24pt;
+    color: black;
     width: 100%;
     height: 200px;
 }
@@ -125,7 +126,7 @@ a {
     <div class="section">
         <span class="label">{ocr_box.language}</span>
         <div class="scrollableimg"><img src="{box_fname}" /></div>
-        <textarea class="transcription">{encoded_transcription}</textarea>
+        <textarea class="transcription" disabled="disabled">{encoded_transcription}</textarea>
     </div>
 ''', file=f)
 
