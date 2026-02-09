@@ -65,11 +65,21 @@ def import_ocr_data(
         if len(new_errors) > 0:
             errors.extend(new_errors)
         else:
-            ocr_boxes.sort(key=lambda item: (item.box.y//10, item.box.x//10))
-            ocr_data.append(OCRPageData(
-                page=page,
-                boxes=ocr_boxes,
-            ))
+            ocr_boxes.sort(key=lambda item: (item.box.y, item.box.x))
+            duplicate_xy = list[tuple[int, int]]()
+            for i in range(0, len(ocr_boxes) - 1):
+                curr_ocr_box = ocr_boxes[i].box
+                next_ocr_box = ocr_boxes[i + 1].box
+                if (curr_ocr_box.x, curr_ocr_box.y) == (next_ocr_box.x, next_ocr_box.y):
+                    duplicate_xy.append((curr_ocr_box.x, curr_ocr_box.y))
+            if len(duplicate_xy) > 0:
+                for (x, y) in sorted(set(duplicate_xy)):
+                    errors.append(f'Duplicate bounding box in {page_fname} at ({x}, {y}).')
+            if len(errors) == 0:
+                ocr_data.append(OCRPageData(
+                    page=page,
+                    boxes=ocr_boxes,
+                ))
 
     if len(errors) > 0:
         raise Exception('\n'.join(errors))
