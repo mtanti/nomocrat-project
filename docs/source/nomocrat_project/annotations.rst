@@ -9,4 +9,5 @@ Data annotation related modules.
     annotations/common.rst
     annotations/layout_data_processor.rst
     annotations/ocr_data_processor.rst
+    annotations/ocr_data_to_sql.rst
     annotations/ocr_data_visualiser.rst

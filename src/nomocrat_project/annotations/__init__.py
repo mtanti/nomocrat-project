@@ -20,6 +20,10 @@ from nomocrat_project.annotations.ocr_data_processor import (
     import_ocr_data,
 )
 
+from nomocrat_project.annotations.ocr_data_to_sql import (
+    convert_to_sql,
+)
+
 from nomocrat_project.annotations.ocr_data_visualiser import (
     visualise_as_html,
 )
