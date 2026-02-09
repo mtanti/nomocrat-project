@@ -82,7 +82,7 @@ def import_ocr_data(
                 ))
 
     if len(errors) > 0:
-        raise Exception('\n'.join(errors))
+        raise ValueError('\n'.join(errors))
 
     ocr_data.sort(key=lambda item: item.page.page_fname)
     return OCRData(

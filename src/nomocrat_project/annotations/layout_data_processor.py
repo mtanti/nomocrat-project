@@ -88,7 +88,7 @@ def import_layout_data(
             ))
 
     if len(errors) > 0:
-        raise Exception('\n'.join(errors))
+        raise ValueError('\n'.join(errors))
 
     layout_data.sort(key=lambda item: item.page.page_fname)
     return LayoutData(
