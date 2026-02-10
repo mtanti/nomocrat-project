@@ -24,7 +24,7 @@ from nomocrat_project.annotations.ocr_data_to_sql import (
     convert_to_sql,
 )
 
-from nomocrat_project.annotations.ocr_data_visualiser import (
+from nomocrat_project.annotations.ocr_data_visualiser.ocr_data_visualiser import (
     visualise_as_html,
 )
 

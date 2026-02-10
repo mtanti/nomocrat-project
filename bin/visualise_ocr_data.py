@@ -38,6 +38,15 @@ def main(
             ' exists).'
         ),
     )
+    parser.add_argument(
+        'connect_to_server',
+        choices=['yes', 'no'],
+        default='no',
+        help=(
+            'Whether to make the transcriptions come from a PHP server and add features to send'
+            ' requests to the server to modify the data as well.'
+        ),
+    )
     args = parser.parse_args()
 
     with open(args.input_path, 'r', encoding='utf-8') as f:
@@ -47,6 +56,7 @@ def main(
         pages_path=args.pages_path,
         data=data,
         output_path=args.output_path,
+        connect_to_server=args.connect_to_server == 'yes',
     )
 
 

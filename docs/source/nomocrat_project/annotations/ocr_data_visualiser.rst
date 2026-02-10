@@ -1,7 +1,9 @@
-ocr_data_visualiser.py
-======================
+ocr_data_visualiser
+===================
 
-.. automodule:: nomocrat_project.annotations.ocr_data_visualiser
-    :members:
-    :show-inheritance:
+OCR data visualiser related files.
 
+.. toctree::
+    :maxdepth: 1
+
+    ocr_data_visualiser/ocr_data_visualiser.rst
