@@ -44,7 +44,7 @@ def get_lang_select(
 
 
 ##########################################################
-def visualise_as_html(
+def visualise_ocr_as_html(
     pages_path: str,
     data: OCRData,
     output_path: str,

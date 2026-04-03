@@ -5,13 +5,13 @@
 #
 # This file is part of NOMOCRAT project.
 '''
-Convert the processed OCR data into an HTML file for easy visualisation.
+Convert the processed layout data into an HTML file for easy visualisation.
 '''
 
 import argparse
 import json
-from nomocrat_project.annotations import OCRData
-from nomocrat_project.annotations import visualise_ocr_as_html
+from nomocrat_project.annotations import LayoutData
+from nomocrat_project.annotations import visualise_layout_as_html
 
 
 #########################################
@@ -21,11 +21,11 @@ def main(
     Main function.
     '''
     parser = argparse.ArgumentParser(
-        description='Convert the processed OCR data into an HTML file for easy visualisation.',
+        description='Convert the processed layout data into an HTML file for easy visualisation.',
     )
     parser.add_argument(
         'input_path',
-        help='The path to the JSON file obtained from process_ocr_data.py.',
+        help='The path to the JSON file obtained from process_layout_data.py.',
     )
     parser.add_argument(
         'pages_path',
@@ -38,25 +38,15 @@ def main(
             ' exists).'
         ),
     )
-    parser.add_argument(
-        'connect_to_server',
-        choices=['yes', 'no'],
-        default='no',
-        help=(
-            'Whether to make the transcriptions come from a PHP server and add features to send'
-            ' requests to the server to modify the data as well.'
-        ),
-    )
     args = parser.parse_args()
 
     with open(args.input_path, 'r', encoding='utf-8') as f:
-        data = OCRData(**json.load(f))
+        data = LayoutData(**json.load(f))
 
-    visualise_ocr_as_html(
+    visualise_layout_as_html(
         pages_path=args.pages_path,
         data=data,
         output_path=args.output_path,
-        connect_to_server=args.connect_to_server == 'yes',
     )
 
 
