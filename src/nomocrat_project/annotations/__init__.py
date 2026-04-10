@@ -35,3 +35,7 @@ from nomocrat_project.annotations.layout_data_processor import (
 from nomocrat_project.annotations.layout_data_visualiser.layout_data_visualiser import (
     visualise_layout_as_html,
 )
+
+from nomocrat_project.annotations.pipeline_data_draft_generator import (
+    generate_pipeline_data_draft,
+)
