@@ -13,7 +13,8 @@ from nomocrat_project.annotations.common import (
     OCRPageData,
     OCRData,
     LayoutPageData,
-    LayoutData
+    LayoutData,
+    PipelineData,
 )
 
 from nomocrat_project.annotations.ocr_data_processor import (
@@ -38,4 +39,8 @@ from nomocrat_project.annotations.layout_data_visualiser.layout_data_visualiser 
 
 from nomocrat_project.annotations.pipeline_data_draft_generator import (
     generate_pipeline_data_draft,
+)
+
+from nomocrat_project.annotations.baseline_texts_extractor import (
+    extract_baseline_texts,
 )

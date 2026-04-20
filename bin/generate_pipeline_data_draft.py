@@ -56,7 +56,6 @@ def main(
     )
     json_output = json.dumps(
         data.model_dump(mode='json'),
-        f,
         ensure_ascii=False,
         indent=4,
     )

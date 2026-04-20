@@ -380,3 +380,32 @@ class PipelineData(pydantic.BaseModel):
     '''
     A list of annotated pages.
     '''
+
+
+##########################################################
+class BaselinePageData(pydantic.BaseModel):
+    '''
+    Baseline text extractions for a whole page.
+    '''
+
+    page: Page
+    '''
+    Information about the page being described.
+    '''
+
+    texts: list[str]
+    '''
+    The list of texts in the page.
+    '''
+
+
+##########################################################
+class BaselineData(pydantic.BaseModel):
+    '''
+    Baseline text extraction data set.
+    '''
+
+    data: list[BaselinePageData]
+    '''
+    A list of annotated pages.
+    '''
